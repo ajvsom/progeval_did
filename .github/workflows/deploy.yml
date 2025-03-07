@@ -1,30 +1,27 @@
-name: Deploy Shiny App
-
 on:
   push:
-    branches:
-      - main  # Deploy when pushing to "main" branch
+     branches:
+       - main
+
+name: Deploy Shiny App to shinyapps.io
 
 jobs:
-  deploy:
+  deploy-shiny:
+    name: Deploy to shinyapps.io
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+       - name: 🛎️ Checkout repository
+         uses: actions/checkout@v2
+         with:
+           fetch-depth: 0
 
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
-
-      - name: Install R packages
-        run: |
-          R -e 'install.packages(c("remotes", "devtools"))'
-          R -e 'remotes::install_cran("rsconnect", dependencies=TRUE, repos="http://cran.rstudio.com")'
-
-      - name: Deploy to shinyapps.io
-        env:
-          SHINY_ACC_NAME: ${{ secrets.SHINY_ACC_NAME }}
-          SHINY_TOKEN: ${{ secrets.SHINY_TOKEN }}
-          SHINY_SECRET: ${{ secrets.SHINY_SECRET }}
-        run: |
-          R -e 'library(rsconnect); rsconnect::setAccountInfo(name = Sys.getenv("SHINY_ACC_NAME"), token = Sys.getenv("SHINY_TOKEN"), secret = Sys.getenv("SHINY_SECRET"))'
-          R -e 'rsconnect::deployApp(appDir = "didANALYSIS")'  # ✅ Adjust if app is in a subfolder
+       - id: deploy
+         name: 💎 Deploy to shinyapps.io
+         uses: qwert666/shinyapps-actions@main
+         env:
+           SHINY_USERNAME: 'ajvsom'  # Update with your shinyapps.io username
+           SHINY_TOKEN: ${{ secrets.SHINY_TOKEN }}  
+           SHINY_SECRET: ${{ secrets.SHINY_SECRET }}  
+           APP_NAME: 'didAnalysis'  # Update this with your app name
+           APP_DIR: 'didANALYSIS'  # Update this if your app is in a subfolder
