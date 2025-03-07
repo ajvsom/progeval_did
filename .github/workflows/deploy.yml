@@ -14,20 +14,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Set up R 4.4.2
+      # Set up R 4.4.2 in GitHub Actions
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: '4.4.2'  # Force R 4.4.2
 
-      - name: deploy
-        uses: BDSI-Utwente/shinyapps-deploy-github-action@v1
-        with:
-          # account and application name (https://<accountName>.shinyapps.io/<appName>)
-          appName: 'didAnalysis'
-          accountName: 'ajvsom'
-
-          # token and secret obtained from https://www.shinyapps.io/admin/#/tokens
-          accountToken: "${{ secrets.SHINY_TOKEN }}"
-          accountSecret: "${{ secrets.SHINY_SECRET }}"
-          appDir: 'didANALYSIS'
+      - name: Deploy to shinyapps.io
+        run: |
+          R -e 'install.packages("rsconnect")'
+          R -e 'rsconnect::setAccountInfo(name = "ajvsom", token = Sys.getenv("SHINY_TOKEN"), secret = Sys.getenv("SHINY_SECRET"))'
+          R -e 'rsconnect::deployApp(appDir = "didANALYSIS", rVersion = "4.4.2")'  # ✅ Force R 4.4.2 during deployment
+        env:
+          SHINY_TOKEN: ${{ secrets.SHINY_TOKEN }}
+          SHINY_SECRET: ${{ secrets.SHINY_SECRET }}
