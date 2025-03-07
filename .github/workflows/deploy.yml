@@ -26,7 +26,7 @@ jobs:
           R -e 'install.packages(c("remotes", "curl", "cobalt", "dplyr", "fixest", "ggplot2", "lmtest", "MatchIt", "readr", "readxl", "sandwich", "shiny", "shinythemes"), repos="http://cran.rstudio.com")'
           R -e 'remotes::install_cran("rsconnect")'
           R -e 'library(rsconnect); rsconnect::setAccountInfo(name = "ajvsom", token = Sys.getenv("SHINY_TOKEN"), secret = Sys.getenv("SHINY_SECRET"))'
-          R -e 'rsconnect::deployApp(appDir = "didANALYSIS", rVersion = "4.4.2", forceUpdate = TRUE)'
+          R -e 'rsconnect::deployApp(appDir = "didANALYSIS", forceUpdate = TRUE)'
         env:
           SHINY_TOKEN: ${{ secrets.SHINY_TOKEN }}
           SHINY_SECRET: ${{ secrets.SHINY_SECRET }}
