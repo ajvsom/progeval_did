@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           R -e 'install.packages("remotes")'
-          R -e 'remotes::install_cran("rsconnect")'  # ✅ Ensure rsconnect is installed
+          R -e 'remotes::install_cran("rsconnect")'  # ✅ Explicitly install rsconnect
 
       - name: Deploy to shinyapps.io
         env:
@@ -26,5 +26,5 @@ jobs:
           SHINY_TOKEN: ${{ secrets.SHINY_TOKEN }}
           SHINY_SECRET: ${{ secrets.SHINY_SECRET }}
         run: |
-          R -e 'rsconnect::setAccountInfo(name = Sys.getenv("SHINY_ACC_NAME"), token = Sys.getenv("SHINY_TOKEN"), secret = Sys.getenv("SHINY_SECRET"))'
+          R -e 'library(rsconnect); rsconnect::setAccountInfo(name = Sys.getenv("SHINY_ACC_NAME"), token = Sys.getenv("SHINY_TOKEN"), secret = Sys.getenv("SHINY_SECRET"))'
           R -e 'rsconnect::deployApp(appDir = "didANALYSIS")'  # ✅ Adjust if app is in a subfolder
