@@ -9,7 +9,7 @@ library(dagitty)
 library(cobalt)
 
 ##### DEFINE THE TERMS
-set.seed(123)  # set seed for reproducability
+set.seed(1)  # set seed for reproducability
 pre_perf = rnorm(100, mean = 3, sd = 0.2) # this is our baseline performance distribution
 shock = 6 # this is the time confounder (sometimes called a shock)
 effect = 3 # this is the actual effect of the program (100% increase; very good!)
