@@ -26,3 +26,4 @@ jobs:
           # token and secret obtained from https://www.shinyapps.io/admin/#/tokens
           accountToken: "${{ secrets.SHINY_TOKEN }}"
           accountSecret: "${{ secrets.SHINY_SECRET }}"
+          appDir: 'didANALYSIS'
