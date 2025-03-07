@@ -13,7 +13,7 @@ set.seed(123)  # set seed for reproducability
 pre_perf = rnorm(100, mean = 3, sd = 0.2) # this is our baseline performance distribution
 shock = 6 # this is the time confounder (sometimes called a shock)
 effect = 3 # this is the actual effect of the program (100% increase; very good!)
-t = 10
+t = 10 # number of total timepoints - when we have pre / post data
 
 ######################################################################################################################## 
 
@@ -68,10 +68,10 @@ case1c = data.frame(
   pre = round(runif(100, min = 3, max = 7), 
               0) 
 )
-case1c$post = case1c$pre + 1
+case1c$post = case1c$pre + 1 # the post-program performance occurs a timepoint after pre-program performance
 case1c = case1c %>% 
   group_by(pre, post) %>% 
-  mutate(cohort = paste0('cohort:', cur_group_id()) ) %>% 
+  mutate(cohort = paste0('cohort:', cur_group_id()) ) %>%  # this will identify all cohorts based on pre / post program group
   ungroup() %>% 
   pivot_longer(cols = c(pre, post), 
                names_to = "phase", 
@@ -406,7 +406,7 @@ p2b = ggplot(plotdf, aes(x = phase, y = m_perf, fill = phase)) +
     title = "a. mean differences",
     y = "average performance",
   ) +
-  coord_cartesian(ylim = (c(.7, 1))) +
+  coord_cartesian(ylim = (c(.7, 1))) + # I used coord_cartesian bc scale_y_continuous wasn't working as intended in geom_col
   theme_classic() +
   theme(
     panel.grid.major.x = element_blank(),  # Grid alignment
@@ -417,7 +417,8 @@ p2b = ggplot(plotdf, aes(x = phase, y = m_perf, fill = phase)) +
     legend.text = element_text(size = 10),
   ) + guides(alpha = "none")  # Remove alpha legend
 
-
+# Love plot shows covariate distances between groups that provide a decent visual summary of how well the samples are matched
+# Would also recommend looking at bal.tab function
 p2c = love.plot(m.out1, var.order = "unadjusted", abs = TRUE, line = FALSE, 
                 thresholds = c(m = .1, ks = .05), colors = c("#FF725C", "#4269D0"), 
                 shapes = c("triangle filled", "circle filled")) +
@@ -448,9 +449,9 @@ case3a = data.frame(
   time = rep(1:t, 100) # tracking time 1 vs time 10
 ) %>%
   left_join(., data.frame(id = seq_along(1:100), 
-                          p = rbinom(100, 1, .5)), by = "id"
+                          p = rbinom(100, 1, .5)), by = "id" # joining the employee table to their program participation table
   ) %>%
-  mutate(
+  mutate( # some of these variables are extraneous but in real orgs the data will have a bunch of junk so I didn't remove.
     phase = ifelse(time > 5, 1, 0),
     pre_perf = rnorm(n(), mean = 3, sd = 0.2), # same as before
     perf = pre_perf + time + 3 * phase * p,
@@ -472,11 +473,13 @@ obs = data.frame(
   mutate(
     phase = ifelse(time > 5, 1, 0),
     pre_perf = rnorm(n(), mean = 3, sd = 0.2), # same as before
+    # In this case, there is a pre-program difference between the two groups
     perf = ifelse(p == 1, pre_perf + time + 3 * phase + p, pre_perf + time + p),
     phase = ifelse(phase == 0, 'pre', 'post'),
     phase = factor(phase, levels = c("pre", "post"))
   ) 
-
+# The counterfactual is if p == 1 hadn't gone through the program; 
+# in case3A, that is the same as the control group so it's not explicitly plotted
 counter = obs %>% filter(p == 1) %>% mutate(perf = pre_perf + time + p,
                                             p = 2)
 case3b = rbind(obs, counter) %>% mutate(p = recode(p, 
