@@ -27,7 +27,7 @@ jobs:
           R -e 'install.packages("curl", repos="http://cran.rstudio.com")'  # ✅ Ensure curl is installed
           R -e 'remotes::install_cran("rsconnect")'  # ✅ Install rsconnect
           R -e 'library(rsconnect); rsconnect::setAccountInfo(name = "ajvsom", token = Sys.getenv("SHINY_TOKEN"), secret = Sys.getenv("SHINY_SECRET"))'
-          R -e 'rsconnect::deployApp(appDir = "didANALYSIS", rVersion = "4.4.2")'
+          R -e 'rsconnect::deployApp(appDir = "didANALYSIS")'
         env:
           SHINY_TOKEN: ${{ secrets.SHINY_TOKEN }}
           SHINY_SECRET: ${{ secrets.SHINY_SECRET }}
